@@ -57,7 +57,7 @@ class SignalGenerator:
     @property
     def instrument_info(self):
         """Get instrument information."""
-        return self._instrument.query_str("*IDN?")
+        return self.query_str("*IDN?")
 
     def write_data_emom(self, data, memory=1):
         """Write data to an edit memory.
