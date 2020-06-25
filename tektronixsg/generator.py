@@ -15,6 +15,19 @@ BURST_MODE = {"triggered": "TRIG", "gated": "GAT"}
 PULSE_HOLD = {"width": "WIDT", "duty": "DUTY"}
 
 
+def list_connected_devices():
+    """List all connected VISA device addresses."""
+    if platform.system() == 'Linux':
+        r = usbtmc.list_resources()
+        resources = usbtmc.Instrument(r[0])
+    elif platform.system() == 'Windows':
+        rm = vi.ResourceManager()
+        resources = rm.list_resources()
+    else:
+        raise Exception('Unknown platform.system(): ' + platform.system())
+    return resources
+
+
 class SignalGenerator:
     """Interface of the AFG31000 arbitrary signal generator."""
 
@@ -82,7 +95,8 @@ class SignalGenerator:
         Args:
             memory(int): Memory which should be read.
         Returns:
-            list: Values ranging from 0 to 16383. 0 corresponds to the minimum voltage and 16383 to the maximum
+            list: Values ranging from 0 to 16383. 0 corresponds to the minimum
+                  voltage and 16383 to the maximum
             voltage of the current set voltage range.
         """
         self._instrument.query_binary_values(
