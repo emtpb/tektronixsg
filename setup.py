@@ -30,6 +30,9 @@ setup(
 
     # Runtime dependencies
     install_requires=[
+        "python-usbtmc",
+        "pyusb",
+        "pyvisa",
     ],
 
     # Python version requirement
