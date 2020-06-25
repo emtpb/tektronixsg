@@ -52,8 +52,9 @@ class SignalGenerator:
         else:
             raise Exception('Unknown platform.system(): ' + platform.system())
 
-        self.channel_1 = Channel(self._instrument, self, "1")
-        self.channel_2 = Channel(self._instrument, self, "2")
+        self.channels = [Channel(self._instrument, self, "1"),
+                         Channel(self._instrument, self, "2")]
+        self.connected_device = self.instrument_info.split(",")[1]
 
     def reset(self):
         """Reset the instrument."""
