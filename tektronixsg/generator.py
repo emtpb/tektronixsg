@@ -24,8 +24,7 @@ PULSE_HOLD = {"width": "WIDT", "duty": "DUTY"}
 def list_connected_devices():
     """List all connected VISA device addresses."""
     if platform.system() == 'Linux':
-        r = usbtmc.list_resources()
-        resources = usbtmc.Instrument(r[0])
+        resources = usbtmc.list_devices()
     elif platform.system() == 'Windows':
         rm = vi.ResourceManager()
         resources = rm.list_resources()
@@ -57,7 +56,7 @@ class SignalGenerator:
             self.instrument = rm.open_resource(resource)
         elif platform.system() == 'Linux':
             if not resource:
-                connected_resources = usbtmc.list_resources()
+                connected_resources = usbtmc.list_devices()
                 if len(connected_resources) == 0:
                     raise RuntimeError("No device connected.")
                 else:
@@ -106,9 +105,12 @@ class SignalGenerator:
         """
         if self.connected_device == "AFG1022":
             memory = ""
-        self.instrument.write_binary_values(
-            "DATA:DATA EMEM{},".format(memory), data, datatype="h",
-            is_big_endian=True)
+        if platform.system() == "Windows":
+            self.instrument.write_binary_values(
+                "DATA:DATA EMEM{},".format(memory), data, datatype="h",
+                is_big_endian=True)
+        elif platform.system() == "Linux":
+            pass
 
     def read_data_emom(self, memory=1):
         """Read arbitrary data from an edit memory.
@@ -169,20 +171,27 @@ class SignalGenerator:
     def query_int(self, query_string):
         """Query from the signal generator and return type as int."""
         return int(
-            float(self.instrument.query(query_string).replace("\n", "")))
+            float(self.query(query_string).replace("\n", "")))
 
     def query_float(self, query_string):
         """Query from the signal generator and return type as float."""
-        return float(self.instrument.query(query_string).replace("\n", ""))
+        return float(self.query(query_string).replace("\n", ""))
 
     def query_str(self, query_string):
         """Query from the signal generator and return type as str."""
-        return self.instrument.query(query_string).replace("\n", "")
+        return self.query(query_string).replace("\n", "")
 
     def query_bool(self, query_string):
         """Query from the signal generator and return type as bool."""
         return bool(
-            int(self.instrument.query(query_string).replace("\n", "")))
+            int(self.query(query_string).replace("\n", "")))
+
+    def query(self, query_string):
+        """Query from the instrument depending on the platform."""
+        if platform.system() == "Windows":
+            return self.instrument.query(query_string)
+        elif platform.system() == "Linux":
+            return self.instrument.ask(query_string)
 
 
 class Channel:
@@ -205,7 +214,7 @@ class Channel:
 
         Args:
             generator: Reference of the :class:`.SignalGenerator` object.
-            channel_number (int): Number of the channel.
+            channel_number (str): Number of the channel.
         """
         self.generator = generator
         self.channel_number = channel_number
@@ -562,7 +571,7 @@ class Channel:
         return self.generator.query_float(
             "SOUR{}:PULS:TRAN:TRA?".format(self.channel_number))
 
-    @pulse_leading_transition.setter
+    @pulse_trailing_transition.setter
     def pulse_trailing_transition(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
@@ -570,7 +579,7 @@ class Channel:
             "SOUR{}:PULS:TRAN:TRA {}".format(self.channel_number, value))
 
     def set_arbitrary_signal(self, voltage_vector, memory=1):
-        """Convenience method to instantly set an arbritrary signal with an
+        """Convenience method to instantly set an arbitrary signal with an
         one dimensional vector for the voltage.
 
         Args:
