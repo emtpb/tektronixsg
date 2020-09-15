@@ -8,4 +8,5 @@ Interface for Tektronix signal generators.
 Features
 ========
 
-* TODO
+* Support for basic functions for model AFG31000
+* Support for basic functions for model AFG1022
