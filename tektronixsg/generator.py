@@ -98,7 +98,8 @@ class SignalGenerator:
         Args:
             data(numpy.ndarray): Data to be written to the editable memory.
                                  Data has to be a list or numpy array
-                                 with values ranging from 0 to 16383.
+                                 with values ranging from 0 to 16383
+                                 (8191 AFG 1022).
                                  0 corresponds to the minimum
                                  voltage and 16383 to the maximum voltage
                                  of the current set voltage range.
