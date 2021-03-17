@@ -113,7 +113,7 @@ class SignalGenerator:
                 "DATA:DATA EMEM{},".format(memory), data, datatype="h",
                 is_big_endian=True)
         elif platform.system() == "Linux":
-            pass
+            raise NotImplementedError
 
     def read_data_emom(self, memory=1):
         """Read arbitrary data from an edit memory.
