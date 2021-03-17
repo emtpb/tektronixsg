@@ -90,6 +90,10 @@ class SignalGenerator:
         all pending commands are complete."""
         self.instrument.write("*WAI")
 
+    def close(self):
+        """Closes the instrument."""
+        self.instrument.close()
+
     def write_data_emom(self, data, memory=1):
         """Write arbitrary data to an edit memory.
 
