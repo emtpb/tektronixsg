@@ -51,13 +51,14 @@ class SignalGenerator:
                 raise RuntimeError("Could not find any tektronix devices")
         else:
             self.instrument = rm.open_resource(resource)
-
         self.channels = [Channel(self, "1"), Channel(self, "2")]
         self.connected_device = self.instrument_info.split(",")[1]
 
     def reset(self):
         """Reset the instrument."""
         self.instrument.write("*RST")
+        # Delay preventing a buffer overflow since reset operation takes time
+        time.sleep(0.5)
 
     def clear(self):
         """Clear event registers and error queue."""
