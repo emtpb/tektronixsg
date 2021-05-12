@@ -1,6 +1,4 @@
 import pyvisa as vi
-import usbtmc
-import platform
 import time
 
 SIGNAL_TYPES_AFG1022 = {"sine": "SIN", "square": "SQU", "pulse": "PULS",
@@ -23,13 +21,8 @@ PULSE_HOLD = {"width": "WIDT", "duty": "DUTY"}
 
 def list_connected_devices():
     """List all connected VISA device addresses."""
-    if platform.system() == 'Linux':
-        resources = usbtmc.list_devices()
-    elif platform.system() == 'Windows':
-        rm = vi.ResourceManager()
-        resources = rm.list_resources()
-    else:
-        raise Exception('Unknown platform.system(): ' + platform.system())
+    rm = vi.ResourceManager()
+    resources = rm.list_resources()
     return resources
 
 
@@ -45,25 +38,19 @@ class SignalGenerator:
     """
 
     def __init__(self, resource=None):
-        if platform.system() == "Windows":
-            rm = vi.ResourceManager()
-            if not resource:
-                connected_resources = rm.list_resources()
-                if len(connected_resources) == 0:
-                    raise RuntimeError("No device connected.")
-                else:
-                    resource = connected_resources[0]
-            self.instrument = rm.open_resource(resource)
-        elif platform.system() == 'Linux':
-            if not resource:
-                connected_resources = usbtmc.list_devices()
-                if len(connected_resources) == 0:
-                    raise RuntimeError("No device connected.")
-                else:
-                    resource = connected_resources[0]
-            self.instrument = usbtmc.Instrument(resource)
+        rm = vi.ResourceManager()
+        if not resource:
+            connected_resources = rm.list_resources()
+            self.instrument = None
+            for resource in connected_resources:
+                manufacturer_id = resource.split("::")[1]
+                if manufacturer_id == "1689":
+                    self.instrument = rm.open_resource(resource)
+                    break
+            if not self.instrument:
+                raise RuntimeError("Could not find any tektronix devices")
         else:
-            raise Exception('Unknown platform.system(): ' + platform.system())
+            self.instrument = rm.open_resource(resource)
 
         self.channels = [Channel(self, "1"), Channel(self, "2")]
         self.connected_device = self.instrument_info.split(",")[1]
@@ -112,12 +99,9 @@ class SignalGenerator:
         """
         if self.connected_device == "AFG1022":
             memory = ""
-        if platform.system() == "Windows":
-            self.instrument.write_binary_values(
-                "DATA:DATA EMEM{},".format(memory), data, datatype="h",
-                is_big_endian=True)
-        elif platform.system() == "Linux":
-            raise NotImplementedError
+        self.instrument.write_binary_values(
+            "DATA:DATA EMEM{},".format(memory), data, datatype="h",
+            is_big_endian=True)
 
     def read_data_emom(self, memory=1):
         """Read arbitrary data from an edit memory.
@@ -197,10 +181,7 @@ class SignalGenerator:
 
     def query(self, query_string):
         """Query from the instrument depending on the platform."""
-        if platform.system() == "Windows":
-            return self.instrument.query(query_string)
-        elif platform.system() == "Linux":
-            return self.instrument.ask(query_string)
+        return self.instrument.query(query_string)
 
 
 class Channel:
