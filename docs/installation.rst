@@ -10,7 +10,7 @@ To install Tektronix Signal Generator Interface, run this command in your termin
 
 .. code-block:: console
 
-   $ pip install tektronixsg
+   $ pip install git+*http-link-to-repo*
 
 This is the preferred method to install Tektronix Signal Generator Interface, as it
 will always install the most recent stable release.
