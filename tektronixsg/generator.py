@@ -85,8 +85,6 @@ class SignalGenerator:
     def write_data_emom(self, data, memory=1):
         """Write arbitrary data to an edit memory.
 
-        Currently only works on windows.
-
         Args:
             data(numpy.ndarray): Data to be written to the editable memory.
                                  Data has to be a list or numpy array
@@ -106,8 +104,6 @@ class SignalGenerator:
 
     def read_data_emom(self, memory=1):
         """Read arbitrary data from an edit memory.
-
-        Currently only works on windows.
 
         Args:
             memory(int): Memory which should be read. Ignored when connected
@@ -573,11 +569,9 @@ class Channel:
         """Convenience method to instantly set an arbitrary signal with an
         one dimensional vector for the voltage.
 
-        Currently only works on windows.
-
         Args:
-            voltage_vector(numpy.ndarray): Voltage vector as numpy array.
-            memory(int): Memory to which the data should be written.
+            voltage_vector (numpy.ndarray): Voltage vector as numpy array.
+            memory (int): Memory to which the data should be written.
         """
         if len(voltage_vector) > 8192:
             raise ValueError("Maximum waveform length is 8192")
