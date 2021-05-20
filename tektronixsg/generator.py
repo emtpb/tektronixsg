@@ -109,9 +109,9 @@ class SignalGenerator:
             memory(int): Memory which should be read. Ignored when connected
                          device is an AFG1022.
         Returns:
-            list: Values ranging from 0 to 16383. 0 corresponds to the minimum
-                  voltage and 16383 to the maximum voltage of the current
-                  set voltage range.
+            list: Values ranging from 0 to 16383.
+            0 corresponds to the minimum voltage and 16383 to the
+            maximum voltage of the current set voltage range.
         """
         if self.connected_device == "AFG1022":
             memory = ""
