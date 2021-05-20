@@ -575,6 +575,8 @@ class Channel:
         """
         if len(voltage_vector) > 8192:
             raise ValueError("Maximum waveform length is 8192")
+        if len(voltage_vector) < 2:
+            raise ValueError("Minimum waveform length is 2")
         min_voltage = min(voltage_vector)
         max_voltage = max(voltage_vector)
         voltage_range = abs(max_voltage-min_voltage)
