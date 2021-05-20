@@ -150,7 +150,7 @@ class SignalGenerator:
         """
         if self.connected_device == "AFG1022":
             raise NotImplementedError
-        return self.query_str("TRIG:TIM?")
+        return self.query_float("TRIG:TIM?")
 
     @trigger_timer.setter
     def trigger_timer(self, value):
