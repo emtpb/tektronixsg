@@ -14,13 +14,6 @@ def default_device():
     time.sleep(0.1)
 
 
-def test_reset(default_device):
-    device = default_device
-    device.channels[0].voltage_max = 3
-    device.reset()
-    assert device.channels[0].voltage_max == 0.5
-
-
 def test_send_trigger(default_device):
     device = default_device
     device.send_trigger()
@@ -80,17 +73,19 @@ def test_output_on(default_device):
 @pytest.mark.parametrize("voltage_max", [2, 0.5, 2e-3])
 def test_voltage_max(default_device, voltage_max):
     device = default_device
-    for channel in device.channels:
-        channel.voltage_max = voltage_max
-        assert channel.voltage_max == voltage_max
+    if device.connected_device == "AFG31052":
+        for channel in device.channels:
+            channel.voltage_max = voltage_max
+            assert channel.voltage_max == voltage_max
 
 
 @pytest.mark.parametrize("voltage_min", [2, 0.5, 2e-3])
 def test_voltage_min(default_device, voltage_min):
     device = default_device
-    for channel in device.channels:
-        channel.voltage_min = voltage_min
-        assert channel.voltage_min == voltage_min
+    if device.connected_device == "AFG31052":
+        for channel in device.channels:
+            channel.voltage_min = voltage_min
+            assert channel.voltage_min == voltage_min
 
 
 @pytest.mark.parametrize("voltage_offset", [2, 0.5, 2e-3])
@@ -147,6 +142,9 @@ def test_phase(default_device, phase):
 def test_burst_on(default_device):
     device = default_device
     for channel in device.channels:
+        if device.connected_device == "AFG1022" and \
+                channel.channel_number == "2":
+            continue
         channel.burst_on = True
         assert channel.burst_on is True
 
@@ -192,7 +190,7 @@ def test_pulse_width(default_device, pulse_width):
             assert channel.pulse_width == pulse_width
 
 
-@pytest.mark.parametrize("pulse_duty", [0.01, 0.5, 0.4])
+@pytest.mark.parametrize("pulse_duty", [0.1, 0.5, 0.4])
 def test_pulse_duty(default_device, pulse_duty):
     device = default_device
     for channel in device.channels:
