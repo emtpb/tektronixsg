@@ -4,4 +4,9 @@ API Reference
 
 This chapter contains the API documentation for Tektronix Signal Generator Interface.
 
-.. automodule:: tektronixsg.generator
+.. toctree::
+    :maxdepth: 2
+
+    api/generator
+    api/channel
+

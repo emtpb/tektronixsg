@@ -20,7 +20,13 @@ PULSE_HOLD = {"width": "WIDT", "duty": "DUTY"}
 
 
 def list_connected_devices():
-    """List all connected VISA device addresses."""
+    """List all connected VISA device addresses.
+
+    Returns:
+        list: All connected VISA devices. Those can be used to explicitly
+        initialize a specific device via the resource parameter of
+        :class:`.SignalGenerator`.
+    """
     rm = vi.ResourceManager()
     resources = rm.list_resources()
     return resources
