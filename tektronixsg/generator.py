@@ -29,7 +29,7 @@ def list_connected_devices():
 class SignalGenerator:
     """Interface for tektronix signal generators.
 
-    Supports the AFG 1022 and the AFG 31000 series.
+    Supports the AFG 1022 and the AFG 31052.
 
     Attributes:
         channels (list): List of all channels.
