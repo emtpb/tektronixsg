@@ -190,10 +190,11 @@ class Channel:
 
     .. note::
         In order to set a voltage of a signal there are two options. Use
-        either the methods voltage_max and voltage_min or voltage_offset
+        either the properties voltage_max and voltage_min or voltage_offset
         and voltage_amplitude. Both options are equivalent, but trying set
-        the desired voltage with combination is not recommended. As an
-        example, if you manipulate voltage_max
+        the desired voltage in combination is not recommended. As an
+        example, if you manipulate voltage_max, voltage_offset
+        and voltage_amplitude automatically get modified as well.
 
     """
     def __init__(self, generator, channel_number):
