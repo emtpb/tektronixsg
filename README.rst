@@ -8,7 +8,7 @@ Interface for Tektronix signal generators.
 Features
 ========
 
-* Support for basic functions for model AFG31000
+* Support for basic functions for model AFG31052
 * Support for basic functions for model AFG1022
 
 Installation
@@ -23,4 +23,7 @@ with:
 
     $ pip install pyvisa-py
 
-For more information visit https://pyvisa.readthedocs.io/en/latest/introduction/configuring.html
+For more information visit the `PyVISA Documentation`_.
+
+
+.. _PyVISA Documentation: https://pyvisa.readthedocs.io/en/latest/introduction/configuring.html
