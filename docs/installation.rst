@@ -10,7 +10,7 @@ To install Tektronix Signal Generator Interface, run this command in your termin
 
 .. code-block:: console
 
-   $ pip install git+*http-link-to-repo*
+   $ pip install git+https://atuin.emt.uni-paderborn.de/git/kevink2/tektronixsg.git
 
 This is the preferred method to install Tektronix Signal Generator Interface, as it
 will always install the most recent stable release.
@@ -29,19 +29,13 @@ From sources
 ============
 
 The sources for Tektronix Signal Generator Interface can be downloaded from the
-`Github repo`_.
+`Gitea repo`_.
 
-You can either clone the public repository:
-
-.. code-block:: console
-
-   $ git clone git://github.com/emtpb/tektronixsg
-
-Or download the `tarball`_:
+You can clone the repository:
 
 .. code-block:: console
 
-   $ curl -OL https://github.com/emtpb/tektronixsg/tarball/master
+   $ git clone https://atuin.emt.uni-paderborn.de/git/kevink2/tektronixsg.git
 
 Once you have a copy of the source, you can install it with:
 
@@ -49,6 +43,11 @@ Once you have a copy of the source, you can install it with:
 
    $ python setup.py install
 
+Or:
 
-.. _Github repo: https://github.com/emtpb/tektronixsg
+.. code-block:: console
+
+    $ pip install tektronixsg/
+
+.. _Gitea repo: https://atuin.emt.uni-paderborn.de/git/kevink2/tektronixsg
 .. _tarball: https://github.com/emtpb/tektronixsg/tarball/master
