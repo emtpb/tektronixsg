@@ -49,7 +49,7 @@ class Channel:
 
     @output_on.setter
     def output_on(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "OUTP{} {}".format(self.channel_number, int(value)))
 
     @property
@@ -67,7 +67,7 @@ class Channel:
     def voltage_max(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:VOLT:HIGH {}".format(self.channel_number, value))
 
     @property
@@ -85,7 +85,7 @@ class Channel:
     def voltage_min(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:VOLT:LOW {}".format(self.channel_number, value))
 
     @property
@@ -96,7 +96,7 @@ class Channel:
 
     @voltage_offset.setter
     def voltage_offset(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:VOLT:OFFS {}".format(self.channel_number, value))
 
     @property
@@ -107,7 +107,7 @@ class Channel:
 
     @voltage_amplitude.setter
     def voltage_amplitude(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:VOLT {}".format(self.channel_number, value))
 
     @property
@@ -132,7 +132,7 @@ class Channel:
             signal_types = SIGNAL_TYPES_AFG1022
         elif self.generator.connected_device == "AFG31052":
             signal_types = SIGNAL_TYPES_AFG31000
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:FUNC {}".format(self.channel_number, signal_types[value]))
 
     @property
@@ -143,7 +143,7 @@ class Channel:
 
     @impedance.setter
     def impedance(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "OUTP{}:IMP {}".format(self.channel_number, value))
 
     @property
@@ -154,7 +154,7 @@ class Channel:
 
     @frequency.setter
     def frequency(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:FREQ {}".format(self.channel_number, value))
 
     @property
@@ -165,7 +165,7 @@ class Channel:
 
     @phase.setter
     def phase(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PHAS {}".format(self.channel_number, value))
 
     @property
@@ -185,7 +185,7 @@ class Channel:
         if self.generator.connected_device == "AFG1022" and \
                 self.channel_number == "2":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:BURS:STAT {}".format(self.channel_number, int(value)))
 
     @property
@@ -209,7 +209,7 @@ class Channel:
         if self.generator.connected_device == "AFG1022" and \
                 self.channel_number == "2":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:BURS:MODE {}".format(self.channel_number,
                                          BURST_MODE[value]))
 
@@ -227,7 +227,7 @@ class Channel:
 
     @burst_cycles.setter
     def burst_cycles(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:BURS:NCYC {}".format(self.channel_number, value))
 
     @property
@@ -245,7 +245,7 @@ class Channel:
     def burst_delay(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:BURS:TDEL {}".format(self.channel_number, value))
 
     @property
@@ -265,7 +265,7 @@ class Channel:
     def pulse_width(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PULS:WIDT {}".format(self.channel_number, value))
 
     @property
@@ -285,7 +285,7 @@ class Channel:
 
     @pulse_duty.setter
     def pulse_duty(self, value):
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PULS:DCYC {}".format(self.channel_number, value))
 
     @property
@@ -305,7 +305,7 @@ class Channel:
     def pulse_delay(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PULS:DEL {}".format(self.channel_number, value))
 
     @property
@@ -329,7 +329,7 @@ class Channel:
     def pulse_hold(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PULS:HOLD {}".format(self.channel_number,
                                          PULSE_HOLD[value]))
 
@@ -352,7 +352,7 @@ class Channel:
         if self.generator.connected_device == "AFG1022":
             self.frequency = 1/value
         else:
-            self.generator.instrument.write(
+            self.generator.write(
                 "SOUR{}:PULS:PER {}".format(self.channel_number, value))
 
     @property
@@ -375,7 +375,7 @@ class Channel:
     def pulse_leading_transition(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PULS:TRAN:LEAD {}".format(self.channel_number, value))
 
     @property
@@ -398,7 +398,7 @@ class Channel:
     def pulse_trailing_transition(self, value):
         if self.generator.connected_device == "AFG1022":
             raise NotImplementedError
-        self.generator.instrument.write(
+        self.generator.write(
             "SOUR{}:PULS:TRAN:TRA {}".format(self.channel_number, value))
 
     def set_arbitrary_signal(self, voltage_vector, memory=1):

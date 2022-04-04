@@ -49,17 +49,17 @@ class SignalGenerator:
 
     def reset(self):
         """Reset the instrument."""
-        self.instrument.write("*RST")
+        self.write("*RST")
         # Delay preventing a buffer overflow since reset operation takes time
         time.sleep(0.5)
 
     def clear(self):
         """Clear event registers and error queue."""
-        self.instrument.write("*CLS")
+        self.write("*CLS")
 
     def send_trigger(self):
         """Trigger signal generator."""
-        self.instrument.write("*TRG")
+        self.write("*TRG")
 
     @property
     def instrument_info(self):
@@ -69,7 +69,7 @@ class SignalGenerator:
     def wait(self):
         """Prevent instrument from executing further commands until
         all pending commands are complete."""
-        self.instrument.write("*WAI")
+        self.write("*WAI")
 
     def close(self):
         """Closes the instrument."""
@@ -131,7 +131,7 @@ class SignalGenerator:
     def trigger_source(self, value):
         if self.connected_device == "AFG1022":
             raise NotImplementedError
-        self.instrument.write("TRIG:SOUR {}".format(TRIGGER_SOURCE[value]))
+        self.write("TRIG:SOUR {}".format(TRIGGER_SOURCE[value]))
 
     @property
     def trigger_timer(self):
@@ -149,7 +149,7 @@ class SignalGenerator:
     def trigger_timer(self, value):
         if self.connected_device == "AFG1022":
             raise NotImplementedError
-        self.instrument.write("TRIG:TIM {}".format(value))
+        self.write("TRIG:TIM {}".format(value))
 
     def query_int(self, query_string):
         """Query from the signal generator and return type as int."""
@@ -170,5 +170,11 @@ class SignalGenerator:
             int(self.query(query_string).replace("\n", "")))
 
     def query(self, query_string):
-        """Query from the instrument depending on the platform."""
+        """Query from the instrument."""
         return self.instrument.query(query_string)
+
+    def write(self, write_string):
+        """Write a string to the instrument."""
+        self.instrument.write(write_string)
+        # Add a delay to prevent too many writes to the instrument
+        time.sleep(0.10)
