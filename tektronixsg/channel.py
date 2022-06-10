@@ -401,14 +401,16 @@ class Channel:
         self.generator.write(
             "SOUR{}:PULS:TRAN:TRA {}".format(self.channel_number, value))
 
-    def set_arbitrary_signal(self, voltage_vector, memory=1):
+    def set_arbitrary_signal(self, voltage_vector):
         """Convenience method to instantly set an arbitrary signal with an
         one dimensional vector for the voltage.
 
         Args:
             voltage_vector (numpy.ndarray): Voltage vector as numpy array.
-            memory (int): Memory to which the data should be written.
         """
+        # Memory number corresponds to channel number,
+        # selecting memory 1 on channel 2 is not possible
+        memory = self.channel_number
         if len(voltage_vector) > 8192:
             raise ValueError("Maximum waveform length is 8192")
         if len(voltage_vector) < 2:
