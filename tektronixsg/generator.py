@@ -76,6 +76,12 @@ class SignalGenerator:
         self.instrument.close()
 
     def error_check(self):
+        """Checks for errors.
+
+        Raises:
+            ValueError: If an error occurs the error message will be
+                included in exception.
+        """
         if self.connected_device == "AFG31052":
             self.instrument.query("*ESR?")
         error = self.instrument.query("SYSTem:ERRor?")
