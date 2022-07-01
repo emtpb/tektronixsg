@@ -1,3 +1,5 @@
+import warnings
+
 import pyvisa as vi
 import time
 
@@ -82,12 +84,13 @@ class SignalGenerator:
             ValueError: If an error occurs the error message will be
                 included in exception.
         """
+        # Used to clear the error bit in the device
         if self.connected_device == "AFG31052":
             self.instrument.query("*ESR?")
         error = self.instrument.query("SYSTem:ERRor?")
         error_code, error_message = error.split(",")
         if int(error_code) != 0:
-            raise ValueError(error_message)
+            warnings.warn(error_message)
 
     def write_data_emom(self, data, memory=1):
         """Write arbitrary data to an edit memory.
