@@ -38,10 +38,20 @@ class SignalGenerator:
             connected_resources = rm.list_resources()
             self.instrument = None
             for resource in connected_resources:
-                manufacturer_id = resource.split("::")[1]
-                if manufacturer_id == "1689":
-                    self.instrument = rm.open_resource(resource)
-                    break
+                device_info = resource.split("::")
+                if "USB" in device_info[0]:
+                    if "x" in device_info[1]:
+                        vendor_id = int(device_info[1], base=16)
+                    else:
+                        vendor_id = int(device_info[1])
+                    if "x" in device_info[2]:
+                        product_id = int(device_info[2], base=16)
+                    else:
+                        product_id = int(device_info[2])
+                    if vendor_id == 1689 and (product_id == 851 or
+                                              product_id == 856):
+                        self.instrument = rm.open_resource(resource)
+                        break
             if not self.instrument:
                 raise RuntimeError("Could not find any tektronix devices")
         else:
