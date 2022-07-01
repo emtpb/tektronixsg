@@ -64,7 +64,7 @@ class SignalGenerator:
     @property
     def instrument_info(self):
         """Get instrument information."""
-        return self.query_str("*IDN?")
+        return self.instrument.query("*IDN?")
 
     def wait(self):
         """Prevent instrument from executing further commands until
@@ -74,6 +74,14 @@ class SignalGenerator:
     def close(self):
         """Closes the instrument."""
         self.instrument.close()
+
+    def error_check(self):
+        if self.connected_device == "AFG31052":
+            self.instrument.query("*ESR?")
+        error = self.instrument.query("SYSTem:ERRor?")
+        error_code, error_message = error.split(",")
+        if int(error_code) != 0:
+            raise ValueError(error_message)
 
     def write_data_emom(self, data, memory=1):
         """Write arbitrary data to an edit memory.
@@ -173,10 +181,13 @@ class SignalGenerator:
 
     def query(self, query_string):
         """Query from the instrument."""
-        return self.instrument.query(query_string)
+        query = self.instrument.query(query_string)
+        self.error_check()
+        return query
 
     def write(self, write_string):
         """Write a string to the instrument."""
         self.instrument.write(write_string)
         # Add a delay to prevent too many writes to the instrument
         time.sleep(0.10)
+        self.error_check()
