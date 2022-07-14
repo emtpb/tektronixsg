@@ -101,7 +101,7 @@ class SignalGenerator:
         error_code, error_message = error.split(",")
         error_code = int(error_code)
         # Ignore events
-        if self.connected_device == "AFG31052" and -899 < error_code < -500:
+        if self.connected_device == "AFG31052" and -899 <= error_code <= -500:
             return
         if error_code != 0:
             warnings.warn(error_message)
