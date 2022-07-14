@@ -99,7 +99,11 @@ class SignalGenerator:
             self.instrument.query("*ESR?")
         error = self.instrument.query("SYSTem:ERRor?")
         error_code, error_message = error.split(",")
-        if int(error_code) != 0:
+        error_code = int(error_code)
+        # Ignore events
+        if self.connected_device == "AFG31052" and -899 < error_code < -500:
+            return
+        if error_code != 0:
             warnings.warn(error_message)
 
     def write_data_emom(self, data, memory=1):
