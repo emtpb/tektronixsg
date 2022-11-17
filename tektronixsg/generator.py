@@ -7,6 +7,8 @@ from .channel import Channel
 
 TRIGGER_SOURCE = {"timer": "TIM", "external": "EXT"}
 
+busy_resources = {}
+
 
 def list_connected_devices():
     """List all connected VISA device addresses.
@@ -21,6 +23,57 @@ def list_connected_devices():
     return resources
 
 
+def get_device_id(resource):
+    """
+    Get the Identification Number of the specified resource.
+
+    Args:
+        resource (str): The resource from which to get the IDN.
+
+    Returns:
+        dict[str, str]: The 'Manufacturer', 'Model' and 'Serial Number'.
+    """
+    try:
+        if resource not in busy_resources:
+            rm = vi.ResourceManager()
+            device = rm.open_resource(resource)
+            idn = device.query('*IDN?')
+            parts = idn.split(',')
+            resource_info = {'Manufacturer': parts[0], 'Model': parts[1], 'Serial Number': parts[2]}
+            busy_resources[resource] = resource_info
+            return resource_info
+        else:
+            return busy_resources[resource]
+
+    except (vi.errors.VisaIOError, ValueError):
+        return None
+
+
+def list_connected_tektronix_generators():
+    """List all connected signal generators from tektronix."""
+    resource_list = list_connected_devices()
+
+    # delete old unplugged devices from the busy_resources list
+    wrong_keys = []
+    for key in busy_resources:
+        if key not in resource_list:
+            wrong_keys.append(key)
+    for wrong_key in wrong_keys:
+        busy_resources.pop(wrong_key, None)
+
+    device_list = []
+    for res_num in range(len(resource_list)):
+        parts = resource_list[res_num].split('::')
+        # Tektronix manufacturer ID: 1689, Keysight model code for AFG1022: 851, for AFG31052: 856
+        if len(parts) > 3 and 'USB' in parts[0] and (parts[1] == '1689' or parts[1] == '0x0699') and \
+                (parts[2] == '851' or parts[2] == '0x0353' or parts[2] == '856' or parts[2] == '0x0358'):
+            device = get_device_id(resource_list[res_num])
+            if device is not None:
+                device_list.append(device)
+
+    return device_list
+
+
 class SignalGenerator:
     """Interface for tektronix signal generators.
 
@@ -33,29 +86,50 @@ class SignalGenerator:
     """
 
     def __init__(self, resource=None):
-        rm = vi.ResourceManager()
-        if not resource:
-            connected_resources = rm.list_resources()
-            self.instrument = None
-            for resource in connected_resources:
-                device_info = resource.split("::")
-                if "USB" in device_info[0]:
-                    if "x" in device_info[1]:
-                        vendor_id = int(device_info[1], base=16)
-                    else:
-                        vendor_id = int(device_info[1])
-                    if "x" in device_info[2]:
-                        product_id = int(device_info[2], base=16)
-                    else:
-                        product_id = int(device_info[2])
-                    if vendor_id == 1689 and (product_id == 851 or
-                                              product_id == 856):
-                        self.instrument = rm.open_resource(resource)
-                        break
-            if not self.instrument:
-                raise RuntimeError("Could not find any tektronix devices")
+        """Class constructor. Open the connection to the instrument using the
+       VISA interface.
+
+       Args:
+           resource (str): Resource name of the instrument or product ID.
+                           If not specified, first connected device returned by visa.
+                           ResourceManager's list_resources method is used.
+       """
+
+        # find the resource or set it to None, if the instr_id is not in the list
+        self._resource_manager = vi.ResourceManager()
+        resource_list = self._resource_manager.list_resources()
+        # Tektronix manufacturer id: 1689
+        visa_name = next((item for item in resource_list if item == resource or
+                          ('USB' in item and item.split('::')[3] == resource and
+                           (item.split('::')[1] == '1689' or item.split('::')[1] == '0x0699'))), None)
+
+        connected_resource = None
+        if visa_name is not None:
+            self._instrument = self._resource_manager.open_resource(visa_name)
+            connected_resource = visa_name
         else:
-            self.instrument = rm.open_resource(resource)
+            connected = False
+            for res_num in range(len(resource_list)):
+                parts = resource_list[res_num].split('::')
+                # Tektronix manufacturer ID: 1689, Tektronix model code for AFG1022: 851, for AFG31052: 856
+                if len(parts) > 3 and 'USB' in parts[0] and (parts[1] == '1689' or parts[1] == '0x0699') and\
+                        (parts[2] == '851' or parts[2] == '0x0353' or parts[2] == '856' or parts[2] == '0x0358'):
+                    try:
+                        self._instrument = self._resource_manager.open_resource(resource_list[res_num])
+                        connected = True
+                        connected_resource = resource_list[res_num]
+                        break
+                    except vi.errors.VisaIOError:
+                        pass
+            if not connected:
+                raise RuntimeError("Could not find any tektronix devices")
+
+        if connected_resource is not None:
+            idn = self._instrument.query('*IDN?')
+            parts = idn.split(',')
+            resource_info = {'Manufacturer': parts[0], 'Model': parts[1], 'Serial Number': parts[2]}
+            busy_resources[connected_resource] = resource_info
+
         self.channels = [Channel(self, "1"), Channel(self, "2")]
         self.connected_device = self.instrument_info.split(",")[1]
 
@@ -76,7 +150,7 @@ class SignalGenerator:
     @property
     def instrument_info(self):
         """Get instrument information."""
-        return self.instrument.query("*IDN?")
+        return self._instrument.query("*IDN?")
 
     def wait(self):
         """Prevent instrument from executing further commands until
@@ -85,7 +159,7 @@ class SignalGenerator:
 
     def close(self):
         """Closes the instrument."""
-        self.instrument.close()
+        self._instrument.close()
 
     def error_check(self):
         """Checks for errors.
@@ -96,8 +170,8 @@ class SignalGenerator:
         """
         # Used to clear the error bit in the device
         if self.connected_device == "AFG31052":
-            self.instrument.query("*ESR?")
-        error = self.instrument.query("SYSTem:ERRor?")
+            self._instrument.query("*ESR?")
+        error = self._instrument.query("SYSTem:ERRor?")
         error_code, error_message = error.split(",")
         error_code = int(error_code)
         # Ignore events
@@ -123,7 +197,7 @@ class SignalGenerator:
         """
         if self.connected_device == "AFG1022":
             memory = ""
-        self.instrument.write_binary_values(
+        self._instrument.write_binary_values(
             "DATA:DATA EMEM{},".format(memory), data, datatype="h",
             is_big_endian=True)
 
@@ -141,7 +215,7 @@ class SignalGenerator:
         """
         if self.connected_device == "AFG1022":
             memory = ""
-        return self.instrument.query_binary_values(
+        return self._instrument.query_binary_values(
             "DATA:DATA? EMEM{}".format(memory),
             datatype="h", is_big_endian=True)
 
@@ -204,13 +278,13 @@ class SignalGenerator:
 
     def query(self, query_string):
         """Query from the instrument."""
-        query = self.instrument.query(query_string)
+        query = self._instrument.query(query_string)
         self.error_check()
         return query
 
     def write(self, write_string):
         """Write a string to the instrument."""
-        self.instrument.write(write_string)
+        self._instrument.write(write_string)
         # Add a delay to prevent too many writes to the instrument
         time.sleep(0.10)
         self.error_check()
