@@ -18,4 +18,6 @@ Development Lead
 Contributors
 ============
 
-None yet. Why not be the first?
+* Eric Kondratenko <erickon@mail.uni-paderborn.de>
+* Bruno Mecke <bmecke@mail.uni-paderborn.de>
+* Tim Hetkämper <hetkaemper@emt.uni-paderborn.de>
