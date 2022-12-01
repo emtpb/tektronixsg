@@ -8,22 +8,28 @@ Interface for Tektronix signal generators.
 Features
 ========
 
-* Support for basic functions for model AFG31052
-* Support for basic functions for model AFG1022
+* Support basic functions for model AFG31052
+* Support basic functions for model AFG1022
 
 Installation
 ============
 
-A PyVISA backend is required.
-
-For Linux it is recommended to use the pyvisa-py backend. It can be installed
-with:
-
 .. code-block:: console
 
-    $ pip install pyvisa-py
+    $ pip install tektronixsg
 
-For more information visit the `PyVISA Documentation`_.
+Usage
+=====
 
+Example how to use tektronixsg::
 
-.. _PyVISA Documentation: https://pyvisa.readthedocs.io/en/latest/introduction/configuring.html
+   from tektronixsg import SignalGenerator
+   sg = SignalGenerator()
+   # Set the voltage amplitude of the first channel to 1V
+   sg.channel[0].voltage_amplitude = 1
+   # Set the signal type of the first channel to sine
+   sg.channel[0].signal_type = "sine"
+   # Set the frequency of the first channel to 100 kHz
+   sg.channel[0].frequency = 1e5
+   # Enable the output of the first channel
+   sg.channel[0].output_on = True
