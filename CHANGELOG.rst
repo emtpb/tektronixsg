@@ -9,9 +9,12 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Semantic versioning: https://semver.org/
 
 
-1.0.0 - 2021-07-06
+`0.1.0`_ - 2022-12-01
 ==================
 
 Added
 -----
-* Initial implementation.
+* First preview release.
+
+
+.. _0.1.0: https://github.com/emtpb/tektronixsg/releases/tag/0.1.0
