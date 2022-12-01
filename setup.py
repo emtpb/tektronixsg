@@ -31,8 +31,8 @@ setup(
     # Runtime dependencies
     install_requires=[
         "pyvisa",
-        "pyvisa-py",
-        "pyusb",
+        'pyvisa-py; sys_platform=="linux"',
+        'pyusb; sys_platform=="linux"',
     ],
 
     # Python version requirement
