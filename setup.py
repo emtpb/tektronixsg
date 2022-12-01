@@ -31,6 +31,8 @@ setup(
     # Runtime dependencies
     install_requires=[
         "pyvisa",
+        "pyvisa-py",
+        "pysub",
     ],
 
     # Python version requirement
