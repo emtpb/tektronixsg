@@ -14,9 +14,11 @@ Features
 Installation
 ============
 
-.. code-block:: console
+To install the Tektronix Signal Generator Interface, run this command in your terminal:
 
-    $ pip install tektronixsg
+   $ pip install tektronixsg
+
+Note that usage in Windows will require a driver, for example the `IO Libraries Suite`_ by Keysight.
 
 Usage
 =====
@@ -33,3 +35,6 @@ Example how to use tektronixsg::
    sg.channels[0].frequency = 1e5
    # Enable the output of the first channel
    sg.channels[0].output_on = True
+
+
+.. _IO Libraries Suite: https://www.keysight.com/us/en/lib/software-detail/computer-software/io-libraries-suite-downloads-2175637.html
