@@ -10,7 +10,7 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 
 
 `0.1.0`_ - 2022-12-01
-==================
+=====================
 
 Added
 -----

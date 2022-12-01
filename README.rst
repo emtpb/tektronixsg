@@ -11,14 +11,16 @@ Features
 * Support basic functions for model AFG31052
 * Support basic functions for model AFG1022
 
+
 Installation
 ============
 
-To install the Tektronix Signal Generator Interface, run this command in your terminal:
+To install the Tektronix Signal Generator Interface, run this command in your terminal::
 
    $ pip install tektronixsg
 
 Note that usage in Windows will require a driver, for example the `IO Libraries Suite`_ by Keysight.
+
 
 Usage
 =====
