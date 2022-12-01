@@ -32,7 +32,7 @@ setup(
     install_requires=[
         "pyvisa",
         "pyvisa-py",
-        "pysub",
+        "pyusb",
     ],
 
     # Python version requirement
