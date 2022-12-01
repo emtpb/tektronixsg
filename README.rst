@@ -14,7 +14,7 @@ Features
 Installation
 ============
 
-To install the Tektronix Signal Generator Interface, run this command in your terminal:
+To install the Tektronix Signal Generator Interface, run this command in your terminal::
 
    $ pip install tektronixsg
 
