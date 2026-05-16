@@ -7,11 +7,11 @@ authors = [
     {name = "Kevin Koch", email = "kevink2@mail.uni-paderborn.de"},
 ]
 requires-python = ">=3"
-license = {file = "LICENSE"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: BSD License",
     "Programming Language :: Python :: 3",
     "Topic :: Scientific/Engineering",
 ]
@@ -32,7 +32,9 @@ test = [
 ]
 
 [project.urls]
-homepage = "https://github.com/emtpb/tektronixsg/"
+Repository = "https://github.com/emtpb/tektronixsg/"
+Issues = "https://github.com/emtpb/tektronixsg/issues"
+Changelog = "https://github.com/emtpb/tektronixsg/blob/master/CHANGELOG.rst"
 
 [build-system]
 requires = ["setuptools_scm"]
