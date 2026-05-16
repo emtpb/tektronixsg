@@ -9,6 +9,14 @@ This project follows the guidelines of `Keep a changelog`_ and adheres to
 .. _Semantic versioning: https://semver.org/
 
 
+`0.2.0`_ - 2026-05-16
+=====================
+
+Changed
+-------
+* Switch to pyproject.toml.
+
+
 `0.1.0`_ - 2022-12-01
 =====================
 
@@ -18,3 +26,4 @@ Added
 
 
 .. _0.1.0: https://github.com/emtpb/tektronixsg/releases/tag/0.1.0
+.. _0.2.0: https://github.com/emtpb/tektronixsg/releases/tag/0.2.0
