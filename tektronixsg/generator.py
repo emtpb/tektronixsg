@@ -9,6 +9,18 @@ TRIGGER_SOURCE = {"timer": "TIM", "external": "EXT"}
 
 busy_resources = {}
 
+MANUFACTURER_IDS = [
+    "1689",  # Tektronix manufacturer ID
+    "0x699",  # Tektronix hex
+]
+
+DEVICE_IDS = [
+    "851",  # AFG1022 model code
+    "0x0353",  # AFG1022 hex
+    "856",  # AFG31052 model code
+    "0x0358",  # AFG31052 hex
+]
+
 
 def list_connected_devices():
     """List all connected VISA device addresses.
@@ -63,10 +75,16 @@ def list_connected_tektronix_generators():
 
     device_list = []
     for res_num in range(len(resource_list)):
-        parts = resource_list[res_num].split('::')
-        # Tektronix manufacturer ID: 1689, Keysight model code for AFG1022: 851, for AFG31052: 856
-        if len(parts) > 3 and 'USB' in parts[0] and (parts[1] == '1689' or parts[1] == '0x0699') and \
-                (parts[2] == '851' or parts[2] == '0x0353' or parts[2] == '856' or parts[2] == '0x0358'):
+        parts = resource_list[res_num].split("::")
+
+        if len(parts) < 3:
+            continue
+
+        if (
+            "USB" in parts[0]
+            and (parts[1] in MANUFACTURER_IDS)
+            and (parts[2] in DEVICE_IDS)
+        ):
             device = get_device_id(resource_list[res_num])
             if device is not None:
                 device_list.append(device)
