@@ -29,6 +29,7 @@ doc = [
 ]
 test = [
     "pytest",
+    "numpy"
 ]
 
 [project.urls]
