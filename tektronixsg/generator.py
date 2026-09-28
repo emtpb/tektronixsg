@@ -49,9 +49,14 @@ def get_device_id(resource):
         if resource not in busy_resources:
             rm = vi.ResourceManager()
             device = rm.open_resource(resource)
-            idn = device.query('*IDN?')
-            parts = idn.split(',')
-            resource_info = {'Manufacturer': parts[0], 'Model': parts[1], 'Serial Number': parts[2]}
+            idn = device.query("*IDN?")
+            parts = idn.split(",")
+            resource_info = {
+                "resource": resource,
+                "Manufacturer": parts[0],
+                "Model": parts[1],
+                "Serial Number": parts[2],
+            }
             busy_resources[resource] = resource_info
             return resource_info
         else:
@@ -103,49 +108,68 @@ class SignalGenerator:
                                 connected.
     """
 
-    def __init__(self, resource=None):
-        """Class constructor. Open the connection to the instrument using the
-       VISA interface.
+    def __init__(self, resource: str = "", serial_number: str = ""):
+        """Initialize the instrument connection using the VISA interface.
 
-       Args:
-           resource (str): Resource name of the instrument or product ID.
-                           If not specified, first connected device returned by visa.
-                           ResourceManager's list_resources method is used.
-       """
+        The device selection follows this precedence:
 
-        # find the resource or set it to None, if the instr_id is not in the list
-        self._resource_manager = vi.ResourceManager()
-        resource_list = self._resource_manager.list_resources()
-        # Tektronix manufacturer id: 1689
-        visa_name = next((item for item in resource_list if item == resource or
-                          ('USB' in item and item.split('::')[3] == resource and
-                           (item.split('::')[1] == '1689' or item.split('::')[1] == '0x0699'))), None)
+        1. If ``resource`` is specified, it is used to connect to the instrument.
+           In this case, ``serial_number`` is ignored.
+        2. If only ``serial_number`` is specified, the connected Tektronix device
+           with the matching serial number is selected.
+        3. If neither is specified, the first detected Tektronix device is used.
 
-        connected_resource = None
-        if visa_name is not None:
-            self._instrument = self._resource_manager.open_resource(visa_name)
-            connected_resource = visa_name
+        Args:
+            resource (str, optional): VISA resource name of the instrument. If
+                specified, this takes precedence over ``serial_number``. If not
+                specified, the device is selected using ``serial_number`` or, if
+                that is also unspecified, the first device returned by
+                ``ResourceManager.list_resources()``.
+
+            serial_number (str, optional): Serial number of the Tektronix device
+                to connect to. This parameter is ignored if ``resource`` is
+                specified.
+
+        Raises:
+            RuntimeError: If no Tektronix device is detected, or if the device
+                specified by ``resource`` or ``serial_number`` cannot be found.
+        """
+
+        visa_name = ""
+        if resource:
+            visa_name = resource
         else:
-            connected = False
-            for res_num in range(len(resource_list)):
-                parts = resource_list[res_num].split('::')
-                # Tektronix manufacturer ID: 1689, Tektronix model code for AFG1022: 851, for AFG31052: 856
-                if len(parts) > 3 and 'USB' in parts[0] and (parts[1] == '1689' or parts[1] == '0x0699') and\
-                        (parts[2] == '851' or parts[2] == '0x0353' or parts[2] == '856' or parts[2] == '0x0358'):
-                    try:
-                        self._instrument = self._resource_manager.open_resource(resource_list[res_num])
-                        connected = True
-                        connected_resource = resource_list[res_num]
-                        break
-                    except vi.errors.VisaIOError:
-                        pass
-            if not connected:
+            possible_devices = list_connected_tektronix_generators()
+
+            if not possible_devices:
                 raise RuntimeError("Could not find any tektronix devices")
 
+            if serial_number:
+                not_found = True
+                for device in possible_devices:
+                    if device["Serial Number"] == serial_number:
+                        visa_name = device["resource"]
+                        not_found = False
+                        break
+                if not_found:
+                    raise RuntimeError("Could not find specified tektronix device")
+            else:
+                # Fallback to first detected tektronix device
+                visa_name = possible_devices[0]["resource"]
+
+        connected_resource = None
+        self._resource_manager = vi.ResourceManager()
+        self._instrument = self._resource_manager.open_resource(visa_name)
+        connected_resource = visa_name
+
         if connected_resource is not None:
-            idn = self._instrument.query('*IDN?')
-            parts = idn.split(',')
-            resource_info = {'Manufacturer': parts[0], 'Model': parts[1], 'Serial Number': parts[2]}
+            idn = self._instrument.query("*IDN?")
+            parts = idn.split(",")
+            resource_info = {
+                "Manufacturer": parts[0],
+                "Model": parts[1],
+                "Serial Number": parts[2],
+            }
             busy_resources[connected_resource] = resource_info
 
         self.channels = [Channel(self, "1"), Channel(self, "2")]
