@@ -108,7 +108,7 @@ class SignalGenerator:
                                 connected.
     """
 
-    def __init__(self, resource: str = "", serial_number: str = ""):
+    def __init__(self, resource: str | None = None, serial_number: str | None = None):
         """Initialize the instrument connection using the VISA interface.
 
         The device selection follows this precedence:
