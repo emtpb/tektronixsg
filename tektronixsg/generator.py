@@ -52,7 +52,7 @@ def get_device_id(resource):
             idn = device.query("*IDN?")
             parts = idn.split(",")
             resource_info = {
-                "resource": resource,
+                "Resource": resource,
                 "Manufacturer": parts[0],
                 "Model": parts[1],
                 "Serial Number": parts[2],
@@ -148,14 +148,14 @@ class SignalGenerator:
                 not_found = True
                 for device in possible_devices:
                     if device["Serial Number"] == serial_number:
-                        visa_name = device["resource"]
+                        visa_name = device["Resource"]
                         not_found = False
                         break
                 if not_found:
                     raise RuntimeError("Could not find specified tektronix device")
             else:
                 # Fallback to first detected tektronix device
-                visa_name = possible_devices[0]["resource"]
+                visa_name = possible_devices[0]["Resource"]
 
         connected_resource = None
         self._resource_manager = vi.ResourceManager()
