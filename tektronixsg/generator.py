@@ -194,6 +194,36 @@ class SignalGenerator:
         """Get instrument information."""
         return self._instrument.query("*IDN?")
 
+    @property
+    def _identification_number(self):
+        """
+        Get the instrument type and software version.
+
+        Returns:
+            str: The IDN in the following format: <manufacturer_string>,<model>,<serial_number>,<software_revision>
+        """
+        return self._query("*IDN?")
+
+    @property
+    def device_model(self):
+        """
+        Get the device model.
+
+        Returns:
+            str: The device model
+        """
+        return self._identification_number.split(",")[1]
+
+    @property
+    def serial_number(self):
+        """
+        Get the device serial number.
+
+        Returns:
+            str: The device serial number
+        """
+        return self._identification_number.split(",")[2]
+
     def wait(self):
         """Prevent instrument from executing further commands until
         all pending commands are complete."""
