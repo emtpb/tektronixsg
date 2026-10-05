@@ -166,6 +166,7 @@ class SignalGenerator:
             idn = self._instrument.query("*IDN?")
             parts = idn.split(",")
             resource_info = {
+                "Resource": resource,
                 "Manufacturer": parts[0],
                 "Model": parts[1],
                 "Serial Number": parts[2],
