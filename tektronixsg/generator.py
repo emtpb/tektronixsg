@@ -135,43 +135,37 @@ class SignalGenerator:
                 specified by ``resource`` or ``serial_number`` cannot be found.
         """
 
-        visa_name = ""
-        if resource:
-            visa_name = resource
-        else:
+        if resource is None:
             possible_devices = list_connected_tektronix_generators()
 
             if not possible_devices:
                 raise RuntimeError("Could not find any tektronix devices")
 
-            if serial_number:
+            if serial_number is not None:
                 not_found = True
                 for device in possible_devices:
                     if device["Serial Number"] == serial_number:
-                        visa_name = device["Resource"]
+                        resource = device["Resource"]
                         not_found = False
                         break
                 if not_found:
                     raise RuntimeError("Could not find specified tektronix device")
             else:
                 # Fallback to first detected tektronix device
-                visa_name = possible_devices[0]["Resource"]
+                resource = possible_devices[0]["Resource"]
 
-        connected_resource = None
         self._resource_manager = vi.ResourceManager()
-        self._instrument = self._resource_manager.open_resource(visa_name)
-        connected_resource = visa_name
+        self._instrument = self._resource_manager.open_resource(resource)
 
-        if connected_resource is not None:
-            idn = self._instrument.query("*IDN?")
-            parts = idn.split(",")
-            resource_info = {
-                "Resource": resource,
-                "Manufacturer": parts[0],
-                "Model": parts[1],
-                "Serial Number": parts[2],
-            }
-            busy_resources[connected_resource] = resource_info
+        idn = self._instrument.query("*IDN?")
+        parts = idn.split(",")
+        resource_info = {
+            "Resource": resource,
+            "Manufacturer": parts[0],
+            "Model": parts[1],
+            "Serial Number": parts[2],
+        }
+        busy_resources[resource] = resource_info
 
         self.channels = [Channel(self, "1"), Channel(self, "2")]
         self.connected_device = self.instrument_info.split(",")[1]
