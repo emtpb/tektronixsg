@@ -19,6 +19,7 @@ Contributors
 ============
 
 * Leander Claes <claes@emt.uni-paderborn.de>
+* Karl Dören
 * Tim Hetkämper <hetkaemper@emt.uni-paderborn.de>
 * Eric Kondratenko <erickon@mail.uni-paderborn.de>
 * Bruno Mecke <bmecke@mail.uni-paderborn.de>
